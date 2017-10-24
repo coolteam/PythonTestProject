@@ -12,6 +12,9 @@ class Word:
         self.p = 0.0
         self.p_list = []
         self.s = 0
+        self.n_list = []
+        self.s_ran = 0
+        self.e_nor = 0
         Word.wordCount += 1
 
     def sum_freq(self):
@@ -22,3 +25,6 @@ class Word:
         for p in self.p_list:
             result += p*math.log(p) if p > 0 else 0
         return result
+
+    def sum_n(self):
+        return sum(self.n_list)
