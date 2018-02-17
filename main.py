@@ -5,19 +5,15 @@ import math
 import operator
 
 
-def distinct(sequence):
-    seen = set()
-    for s in sequence:
-        if s not in seen:
-            seen.add(s)
-            yield s
+    def sort_by_s(word):
+    return word.get_s()
 
 
 union_list = []
 unique_words = []
 P = 6
 for book in range(1, P+1):
-    file_name = './Book'+str(book)+'.txt'
+    file_name = 'D:/Research/Books/Book'+str(book)+'.txt'
     file = open(file_name, 'r', encoding='utf-8')
     text = file.read()
     text = text.lower()
@@ -28,7 +24,7 @@ for book in range(1, P+1):
     N = len(split)
     freq_list = {}
     for k, v in items.items():
-        if v > 30:
+        #  if v > 10:
             freq_list[k] = (v, v/N)
             if k not in unique_words:
                 unique_words.append(k)
@@ -37,34 +33,23 @@ for book in range(1, P+1):
 words = {}
 for w1 in unique_words:
     w = Word(w1)
-    words[w1] = w
-for k in words:
     for book in range(0, P):
-        #  print(union_list[book])
-        value0 = union_list[book][k][0] if k in union_list[book] else 0.0
-        value1 = union_list[book][k][1] if k in union_list[book] else 0.0
-        #  print(k, value)
-        words[k].n_list.append(value1)
-        words[k].freq_list.append(value1)
-    #  print(freq_list['frodo'][1] if 'frodo' in freq_list else 0.0)
+        value0 = union_list[book][w1][0] if w1 in union_list[book] else 0.0
+        value1 = union_list[book][w1][1] if w1 in union_list[book] else 0.0
+        w.n_list.append(value0)
+        w.freq_list.append(value1)
+    words[w1] = w
+    #  print(words[w1].name, words[w1].n_list, words[w1].freq_list, words[w1].sum_n())
 for w in words:
     for f in words[w].freq_list:
-        words[w].p_list.append(f/words[w].sum_freq())
+        words[w].p_list.append(f/words[w].sum_freq() if words[w].sum_freq() > 0 else 0.0)
 for w in words:
-    words[w].s = -(1/math.log(P))*words[w].sum_p_ln_p()
-    #  print(w, words[w].s)
-
-
-# for word in unique_words:
-#     if word == 'frodo':
-#         sum_freq = sum(x[word][1] if word in x else 0.0 for x in union_list)
-#         for freq in union_list:
-#             print(freq[word][1] if word in freq else 0.0/sum_freq)
-#  print(union_list[0]['the'][1]/sum(x['the'][1] for x in union_list))
+    words[w].s = -(1.0/math.log(P))*words[w].sum_p_ln_p()
 for w in words:
-    words[w].s_ran = 1 - ((P - 1)/2*words[w].sum_n()*math.log(P))
+    words[w].s_ran = 1.0 - ((P - 1.0)/(2.0*words[w].sum_n()*math.log(P)))
 for w in words:
-    words[w].e_nor = (1 - words[w].s)/(1 - words[w].s_ran)
-for w in sorted(words.values(), key=operator.attrgetter('e_nor')):
-    if 0.0 < w.s and 1.5 < w.e_nor: #  <= 0.6:
-        print(w.name,  w.s, w.s_ran, w.e_nor,)
+    words[w].e_nor = (1.0 - words[w].s)/(1.0 - words[w].s_ran) if words[w].s_ran != 1.0 else 0.0
+for w in sorted(words.values(), key=operator.attrgetter('e_nor'), reverse=1):
+    if 0.0 < w.s < 0.9999:  # and 1.5 < w.e_nor: #  <= 0.6:
+        print(w.name,  w.s, w.s_ran, w.e_nor, w.sum_freq())
+#   print(words[w].name, words[w].n_list, words[w].freq_list, words[w].sum_n())
